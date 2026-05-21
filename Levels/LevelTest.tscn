@@ -1,124 +1,102 @@
-[gd_scene load_steps=11 format=3 uid="uid://d58hcc4i7vsa"]
+[gd_scene load_steps=15 format=3 uid="uid://d58hcc4i7vsa"]
 
-[ext_resource type="PackedScene" uid="uid://cpwqd8blsrjgf" path="res://Objects/Player/PlayerBall.tscn" id="1_shul5"]
-[ext_resource type="PackedScene" uid="uid://c3tteu6778tk3" path="res://Objects/finish_point.tscn" id="2_b6uvw"]
-[ext_resource type="PackedScene" uid="uid://c78mcjtwng0cw" path="res://UI/menu_screen.tscn" id="3_7b0me"]
-[ext_resource type="Script" uid="uid://rqpter8ms6t5" path="res://Levels/level_manager.gd" id="4_p2k11"]
-[ext_resource type="PackedScene" uid="uid://dbnj22wn6wuko" path="res://Objects/death_area.tscn" id="4_pew5n"]
-[ext_resource type="PackedScene" uid="uid://c17gh3wre7tja" path="res://rampa_solidify3.tscn" id="7_flbus"]
-[ext_resource type="PackedScene" uid="uid://c3ghsu1rf7ndc" path="res://Imports/EModels/rampa_solidify.glb" id="10_giyf1"]
+[ext_resource type="PackedScene" uid="uid://cthcofebefql8" path="res://Objects/Player/scene flatfish/FISH.tscn" id="1_cc3a2"]
+[ext_resource type="Script" uid="uid://x8e51hpu0ayy" path="res://Imports/PModels/FishInTheBall.gd" id="2_giyf1"]
+[ext_resource type="Script" uid="uid://cm3jv3jtvxfii" path="res://Objects/Player/finish_check_ray.gd" id="3_fdrc5"]
+[ext_resource type="Script" uid="uid://bmq08uhr7p701" path="res://Objects/Player/ground_check_ray.gd" id="4_6o64c"]
+[ext_resource type="Script" uid="uid://cfweqwuwxlgqb" path="res://Objects/Player/marble.gd" id="5_j6px6"]
+[ext_resource type="PackedScene" uid="uid://bvyi0q6g0efo" path="res://Objects/Player/ball_3d.tscn" id="6_hj555"]
+[ext_resource type="Texture2D" uid="uid://qwjkdkim688d" path="res://icon.svg" id="7_8fnor"]
+[ext_resource type="Script" uid="uid://b2sbtf5a410d7" path="res://Objects/Player/Camera.gd" id="8_q52cx"]
+[ext_resource type="Script" uid="uid://bt6hjd7cgr08t" path="res://Objects/Player/debug_label_marble.gd" id="9_u38hn"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_gqqr0"]
-sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
-ground_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
+[sub_resource type="SphereShape3D" id="SphereShape3D_b36pd"]
+radius = 0.2
 
-[sub_resource type="Sky" id="Sky_shul5"]
-sky_material = SubResource("ProceduralSkyMaterial_gqqr0")
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_mt1hp"]
+friction = 0.35
+bounce = 0.5
 
-[sub_resource type="Environment" id="Environment_b6uvw"]
-background_mode = 2
-sky = SubResource("Sky_shul5")
-tonemap_mode = 2
-glow_enabled = true
+[sub_resource type="SphereShape3D" id="SphereShape3D_xlixd"]
 
-[node name="LevelTest" type="Node3D"]
+[sub_resource type="SphereMesh" id="SphereMesh_par3p"]
 
-[node name="LevelManager" type="Node" parent="."]
-unique_name_in_owner = true
-script = ExtResource("4_p2k11")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_s8vgd"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.23921569)
+albedo_texture = ExtResource("7_8fnor")
 
-[node name="Environment" type="Node3D" parent="."]
+[node name="PlayerBall" type="Node3D" groups=["player"]]
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="Environment"]
-environment = SubResource("Environment_b6uvw")
+[node name="flatfish" parent="." instance=ExtResource("1_cc3a2")]
+transform = Transform3D(0.025, 0, 0, 0, 0.025, 0, 0, 0, 0.025, 0, 0, 0)
+script = ExtResource("2_giyf1")
 
-[node name="DirectionalLight3D" type="DirectionalLight3D" parent="Environment"]
-transform = Transform3D(-0.8660254, -0.43301278, 0.25, 0, 0.49999997, 0.86602545, -0.50000006, 0.75, -0.43301266, 0, 0, 0)
-shadow_enabled = true
+[node name="Skeleton3D" parent="flatfish/Armature" index="0"]
+bones/1/rotation = Quaternion(-0.70857453, 3.2625314e-19, 3.2625314e-19, 0.70563596)
+bones/2/rotation = Quaternion(0.002077923, 2.6246894e-26, -4.6139137e-19, 0.99999785)
+bones/3/rotation = Quaternion(0.7071067, -5.338507e-08, -5.3385072e-08, 0.7071068)
+bones/4/rotation = Quaternion(-3.5527122e-15, -2.1316282e-14, -4.2351607e-22, 1)
 
-[node name="CSGCylinder3D3" type="CSGCylinder3D" parent="Environment"]
-transform = Transform3D(0.44696882, 0.32502946, -0.8334034, -0.89351815, 0.2067973, -0.39855158, 0.042809248, 0.92281127, 0.3828535, -2.91496, -0.93719983, -5.7611117)
-use_collision = true
-radius = 0.056152344
-height = 8.69873
+[node name="AnimationTree" parent="flatfish" index="2"]
+parameters/Flap/TimeScale/scale = 1.0
 
-[node name="CSGCylinder3D2" type="CSGCylinder3D" parent="Environment"]
-transform = Transform3D(-0.65203774, -0.74472415, 0.14223257, -0.17039275, 0.32673374, 0.9296225, -0.7387899, 0.58191764, -0.33993715, 19.560347, -5.6081033, -4.7026377)
-use_collision = true
-radius = 0.056152344
-height = 8.69873
+[node name="FinishCheckRay" type="RayCast3D" parent="."]
+target_position = Vector3(0, -0.56, 0)
+collision_mask = 4
+collide_with_areas = true
+script = ExtResource("3_fdrc5")
 
-[node name="CSGCylinder3D" type="CSGCylinder3D" parent="Environment"]
-transform = Transform3D(-0.21355902, 0.97693026, 0, -0.9767276, -0.21351472, -0.020366587, -0.01989673, -0.004349467, 0.9997926, 14.274483, -3.5641954, -2.0825963)
-use_collision = true
-radius = 0.04345703
-height = 3.3701172
+[node name="GroundCheckRay" type="ShapeCast3D" parent="."]
+shape = SubResource("SphereShape3D_b36pd")
+target_position = Vector3(0, -0.1, 0)
+collision_mask = 9
+collide_with_areas = true
+script = ExtResource("4_6o64c")
 
-[node name="CSGBox3D6" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.5732031, -11.990638, -8.35656)
-use_collision = true
-size = Vector3(17.00351, 0.001, 15.0721855)
+[node name="Marble" type="RigidBody3D" parent="."]
+collision_layer = 2
+physics_material_override = SubResource("PhysicsMaterial_mt1hp")
+continuous_cd = true
+linear_damp = 0.25
+script = ExtResource("5_j6px6")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -9.807333, -0.10949963, 6.2612514)
-use_collision = true
-size = Vector3(22.693542, 0.12890625, 15.853111)
+[node name="ball3d" parent="Marble" instance=ExtResource("6_hj555")]
+transform = Transform3D(0.087, 0, 0, 0, 0.087, 0, 0, 0, 0.087, -0.006422013, 0, 0.013007715)
 
-[node name="CSGBox3D3" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4287577, 1.9879124, 10.284171)
-use_collision = true
-size = Vector3(1.5204697, 4.3237305, 7.807272)
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Marble"]
+transform = Transform3D(0.56, 0, 0, 0, 0.56, 0, 0, 0, 0.56, 0, 0, 0)
+shape = SubResource("SphereShape3D_xlixd")
+debug_fill = false
 
-[node name="CSGBox3D5" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 15.347973, -4.9500203, 2.229983)
-use_collision = true
-size = Vector3(1.5204697, 3.1239014, 2.608592)
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Marble"]
+transform = Transform3D(0.51, 0, 0, 0, 0.51, 0, 0, 0, 0.51, 0, 0, 0)
+mesh = SubResource("SphereMesh_par3p")
+surface_material_override/0 = SubResource("StandardMaterial3D_s8vgd")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.008138, -3.9108007, -1.9256711)
-use_collision = true
-size = Vector3(1.5204697, 1.7005005, 2.608592)
+[node name="CameraContainer" type="Node3D" parent="."]
+script = ExtResource("8_q52cx")
 
-[node name="CSGBox3D4" type="CSGBox3D" parent="Environment/CSGBox3D4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.22598171, 0.37225938, 5.979889)
-use_collision = true
-size = Vector3(3.5727348, 1.575943, 2.608592)
+[node name="hRot" type="Node3D" parent="CameraContainer"]
 
-[node name="CSGBox3D2" type="CSGBox3D" parent="Environment"]
-transform = Transform3D(0.948876, 0.31564903, 0, -0.31564903, 0.948876, 0, 0, 0, 0.9999999, 49.235443, -15.9592085, 0.083405316)
-use_collision = true
-size = Vector3(100.54031, 0.12890625, 2.934021)
+[node name="vRot" type="Node3D" parent="CameraContainer/hRot"]
 
-[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Environment"]
-transform = Transform3D(0.3534735, 0.082464956, -0.048518818, -0.031018171, 0.9397451, 0.0042576464, 0.016789306, 0, 1.0293566, 8.068163, -2.31362, 1.570996)
-use_collision = true
-polygon = PackedVector2Array(0, 0, -2.3616714, 0.32049036, 0.7261858, 0.35776043, 1.3822851, 0.21974611)
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraContainer/hRot/vRot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+spring_length = 1.5
+margin = 1.0
 
-[node name="CSGPolygon3D" type="CSGPolygon3D" parent="Environment/CSGPolygon3D"]
-transform = Transform3D(-0.45062435, -0.15276961, 0.4561041, -0.07338119, 1.0263934, 0.032021258, -0.19123977, -0.033865467, -1.0870194, 0.79712296, 0.1212374, -0.834414)
-use_collision = true
-polygon = PackedVector2Array(0, 0, -2.3616714, 0.32049036, 0.77088165, 0.27530527, 1.3822851, 0.21974611)
+[node name="Camera3D" type="Camera3D" parent="CameraContainer/hRot/vRot/SpringArm3D"]
+current = true
 
-[node name="FinishPoint" parent="Environment" instance=ExtResource("2_b6uvw")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.929516, -0.16471557, 0.3375656)
-finishid = 0
+[node name="DebugCanvas" type="CanvasLayer" parent="."]
 
-[node name="PlayerBall" parent="Environment" instance=ExtResource("1_shul5")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.22436064, 0)
+[node name="DebugLabel" type="Label" parent="DebugCanvas"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "sample_text: 0.00000"
+script = ExtResource("9_u38hn")
+metadata/_edit_use_anchors_ = true
 
-[node name="DeathArea" parent="Environment" instance=ExtResource("4_pew5n")]
-transform = Transform3D(82.63834, 0, -56.31078, 0, 50, 0, 56.31078, 0, 82.63834, 1.6489608, -29.699512, 1.0313823)
-
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
-
-[node name="MenuScreen" parent="CanvasLayer" instance=ExtResource("3_7b0me")]
-visible = false
-
-[node name="rampa_solidify2" parent="." instance=ExtResource("10_giyf1")]
-transform = Transform3D(0.4112991, 1.0148212, 3.4871185, 0.115775846, 3.5039623, -1.0333785, -3.6299386, 0.22674467, 0.36215726, 28.180155, -5.005866, 0.175529)
-
-[node name="rampa_solidify" parent="." instance=ExtResource("10_giyf1")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.1374052, 0.98330176, 10.480562)
-
-[node name="rampa_solidify3" parent="." instance=ExtResource("7_flbus")]
-transform = Transform3D(-0.44832456, 1.0137277, 3.3145716, 0.13587815, 3.3447542, -1.00458, -3.4634616, -2.6039778e-08, -0.4684632, 31.885244, -6.2221746, -1.9714652)
+[editable path="flatfish"]
+[editable path="Marble/ball3d"]
