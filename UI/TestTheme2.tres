@@ -1,0 +1,6 @@
+[gd_resource type="Theme" load_steps=2 format=3 uid="uid://c6rrceou8jc03"]
+
+[sub_resource type="FontVariation" id="FontVariation_oyor1"]
+
+[resource]
+default_font = SubResource("FontVariation_oyor1")

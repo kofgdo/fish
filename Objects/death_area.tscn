@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3 uid="uid://dbnj22wn6wuko"]
+
+[ext_resource type="Script" uid="uid://bl1cn705klsc6" path="res://Objects/death_area.gd" id="1_q1vqs"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_dwwb4"]
+size = Vector3(2.993164, 0.38085938, 2.7520752)
+
+[node name="DeathArea" type="Node3D"]
+script = ExtResource("1_q1vqs")
+
+[node name="Area3D" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Area3D"]
+shape = SubResource("BoxShape3D_dwwb4")
+debug_color = Color(0, 0.39215687, 0.4627451, 0.9137255)
+
+[connection signal="body_entered" from="Area3D" to="." method="_on_area_3d_body_entered"]

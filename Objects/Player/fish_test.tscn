@@ -1,0 +1,291 @@
+[gd_scene load_steps=28 format=3 uid="uid://d1vrbrk6bqxah"]
+
+[ext_resource type="Script" uid="uid://baanxy8vt6pgn" path="res://Objects/Player/finish_check_ray_fish.gd" id="1_08e7u"]
+[ext_resource type="PackedScene" uid="uid://y3bokkhlnlnd" path="res://Objects/Player/fish_3d(1).tscn" id="1_40n67"]
+[ext_resource type="Script" uid="uid://ba1muo6wg4yjc" path="res://Objects/Player/ground_check_ray_fish.gd" id="2_tkyyn"]
+[ext_resource type="Script" uid="uid://d4b0dotrx1byq" path="res://Objects/Player/feesh.gd" id="3_aa47m"]
+[ext_resource type="Script" uid="uid://bypcuw5rxtxjr" path="res://Objects/Player/Camera_fish.gd" id="4_aa47m"]
+[ext_resource type="PackedScene" uid="uid://cthcofebefql8" path="res://Objects/Player/scene flatfish/FISH.tscn" id="4_s5lk7"]
+[ext_resource type="Script" uid="uid://dycw5tkjby774" path="res://Objects/Player/debug_label_fish.gd" id="5_6ajfv"]
+[ext_resource type="Script" uid="uid://bean45v4dlyef" path="res://Objects/Player/visual_feesh.gd" id="5_oaiku"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_oaiku"]
+friction = 0.1
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_s5lk7"]
+size = Vector3(0.92, 0.6, 0.185)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_kd4cr"]
+radius = 0.1
+height = 0.8
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_40n67"]
+size = Vector3(1.41, 1, 0.22)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_utdnj"]
+radius = 0.115
+height = 1.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_kd4cr"]
+size = Vector3(1.715, 0.615, 0.241)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_s5lk7"]
+radius = 0.125
+height = 0.75
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_slhfj"]
+radius = 0.1
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_t0g3d"]
+radius = 0.075
+height = 0.55
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_4rxwo"]
+radius = 0.05
+height = 0.25
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_6ajfv"]
+size = Vector3(1.2, 0.74, 0.185)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_oaiku"]
+radius = 0.1
+height = 0.7475586
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_40n67"]
+radius = 0.1
+height = 0.75
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_utdnj"]
+size = Vector3(0.94, 0.64, 0.15)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_oaiku"]
+size = Vector3(0.69, 0.415, 0.1)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_slhfj"]
+size = Vector3(0.44, 0.315, 0.085)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fscrp"]
+radius = 0.03
+height = 0.443
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_8x8cr"]
+size = Vector3(1, 0.5, 4)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_oaiku"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.14901961)
+
+[node name="Node3D" type="Node3D" groups=["player"]]
+
+[node name="Feesh" type="RigidBody3D" parent="."]
+collision_layer = 2
+mass = 2.0
+physics_material_override = SubResource("PhysicsMaterial_oaiku")
+gravity_scale = 0.5
+continuous_cd = true
+linear_damp = 0.5
+angular_damp = 25.0
+script = ExtResource("3_aa47m")
+
+[node name="C_Head_Far" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, -0.99999994, 0, 0.99999994, -4.3711385e-08, -0.026882596, 0.012762476, -1.3917477)
+shape = SubResource("BoxShape3D_s5lk7")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Head_Far_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.4811399, 0.0126491785, -1.2950416)
+shape = SubResource("CapsuleShape3D_kd4cr")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Head_Far_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.433464, 0.0126491785, -1.2999573)
+shape = SubResource("CapsuleShape3D_kd4cr")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Head_Mid" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371138e-08, -0.9999999, 0, 0.9999999, -4.371138e-08, 0.023065858, 0.05, -0.6439556)
+shape = SubResource("BoxShape3D_40n67")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Head_Mid_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.6630961, 0.05196196, -0.7020575)
+shape = SubResource("CapsuleShape3D_utdnj")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Head_Mid_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.72365093, 0.05196196, -0.7020575)
+shape = SubResource("CapsuleShape3D_utdnj")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Root" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0.008026481, 0)
+shape = SubResource("BoxShape3D_kd4cr")
+debug_color = Color(0.9659061, 0, 0.4808572, 1)
+
+[node name="C_Root_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.85415053, 0.008026481, 0)
+shape = SubResource("CapsuleShape3D_s5lk7")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tip_ROUND" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, -0.031298324, 0.008026481, -1.694044)
+shape = SubResource("CapsuleShape3D_slhfj")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tipper_ROUND" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, -0.010019049, 0.008026481, -1.7743127)
+shape = SubResource("CapsuleShape3D_t0g3d")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tippest_ROUND" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(-4.371139e-08, 1, -4.371139e-08, 0, -4.371139e-08, -1, -1, -4.371139e-08, 1.9106855e-15, -0.010019049, 0.008026481, -1.8455759)
+shape = SubResource("CapsuleShape3D_4rxwo")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Root_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.8534268, 0.008026481, 0)
+shape = SubResource("CapsuleShape3D_s5lk7")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tail_Mid" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371137e-08, -0.9999997, 0, 0.9999997, -4.371137e-08, 0, 0.021409914, 0.5546158)
+shape = SubResource("BoxShape3D_6ajfv")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Mid_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.5954971, 0.01635909, 0.60065734)
+shape = SubResource("CapsuleShape3D_oaiku")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tail_Mid_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.59852326, 0.01635909, 0.60065734)
+shape = SubResource("CapsuleShape3D_oaiku")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tail_Axle_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, -0.44918913, 0.008026481, 1.1112182)
+shape = SubResource("CapsuleShape3D_40n67")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tail_Axle_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0.46180773, 0.008026481, 1.1112182)
+shape = SubResource("CapsuleShape3D_40n67")
+debug_color = Color(0, 0.6503337, 0.07871788, 1)
+
+[node name="C_Tail_Axle" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, -0.99999994, 0, 0.99999994, -4.3711385e-08, 0, 0.019006897, 1.1390123)
+shape = SubResource("BoxShape3D_utdnj")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Far" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(1, 0, 0, 0, -4.3711385e-08, -0.99999994, 0, 0.99999994, -4.3711385e-08, 0, 0.016605068, 1.6599381)
+shape = SubResource("BoxShape3D_oaiku")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Far_SPLITL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(0.65565056, 0.75506437, -3.3004913e-08, 0, -4.371138e-08, -0.9999999, -0.75506437, 0.65565044, -2.8659391e-08, -0.43808475, 0.003714878, 1.6840489)
+shape = SubResource("BoxShape3D_slhfj")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Far_ROUNDL" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(0.7193397, -0.6946583, 3.036448e-08, 0, -4.371138e-08, -0.9999999, 0.69465834, 0.71933967, -3.144334e-08, -0.6922364, 0.0009699799, 1.987426)
+shape = SubResource("CapsuleShape3D_fscrp")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Far_SPLITR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(0.65605897, -0.7547094, 3.2989398e-08, 0, -4.371138e-08, -0.9999999, 0.7547094, 0.6560589, -2.8677247e-08, 0.430846, 0.003714878, 1.6840489)
+shape = SubResource("BoxShape3D_slhfj")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="C_Tail_Far_ROUNDR" type="CollisionShape3D" parent="Feesh"]
+transform = Transform3D(0.7071067, 0.70710665, -3.0908616e-08, 0, -4.371138e-08, -0.9999999, -0.7071067, 0.70710665, -3.0908616e-08, 0.69486207, 0.0009699799, 1.9978039)
+shape = SubResource("CapsuleShape3D_fscrp")
+debug_color = Color(0, 0.6, 0.69803923, 1)
+
+[node name="FinishCheckRay" type="ShapeCast3D" parent="Feesh"]
+transform = Transform3D(3, 0, 0, 0, -1.3113416e-07, 3, 0, -3, -1.3113416e-07, 0, 0.13818324, 0)
+shape = SubResource("BoxShape3D_8x8cr")
+target_position = Vector3(0, 0, 0)
+collision_mask = 12
+collide_with_areas = true
+debug_shape_custom_color = Color(1, 1, 0, 1)
+script = ExtResource("1_08e7u")
+
+[node name="GroundCheckRayMinus" type="RayCast3D" parent="Feesh"]
+target_position = Vector3(0, 0.8, 0)
+collision_mask = 9
+collide_with_areas = true
+debug_shape_custom_color = Color(1, 0, 0, 1)
+debug_shape_thickness = 5
+script = ExtResource("2_tkyyn")
+
+[node name="GroundCheckRayPlus" type="RayCast3D" parent="Feesh"]
+editor_description = "GLUE SIDE / WHITE"
+target_position = Vector3(0, -0.77, 0)
+collision_mask = 9
+collide_with_areas = true
+debug_shape_custom_color = Color(0, 0.9529412, 1, 1)
+debug_shape_thickness = 5
+script = ExtResource("2_tkyyn")
+
+[node name="flatfish" parent="Feesh" instance=ExtResource("4_s5lk7")]
+script = ExtResource("5_oaiku")
+
+[node name="Armature" parent="Feesh/flatfish" index="0"]
+transform = Transform3D(0.25, 0, 0, 0, 0.25, 0, 0, 0, 0.25, 0, 0, 0)
+
+[node name="Skeleton3D" parent="Feesh/flatfish/Armature" index="0"]
+bones/1/rotation = Quaternion(-0.70857453, 3.2625314e-19, 3.2625314e-19, 0.70563596)
+bones/2/rotation = Quaternion(0.002077923, 2.6246894e-26, -4.6139137e-19, 0.99999785)
+bones/3/rotation = Quaternion(0.7071067, -5.338507e-08, -5.3385072e-08, 0.7071068)
+bones/4/rotation = Quaternion(-3.5527122e-15, -2.1316282e-14, -4.2351607e-22, 1)
+
+[node name="Cube" parent="Feesh/flatfish/Armature/Skeleton3D" index="0"]
+material_override = SubResource("StandardMaterial3D_oaiku")
+
+[node name="Nose3D" type="Node3D" parent="Feesh/flatfish/Armature/Skeleton3D/Cube" index="0"]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 0, 0, -7.0993814)
+
+[node name="AnimationTree" parent="Feesh/flatfish" index="2"]
+parameters/Flap/TimeScale/scale = 1.0
+
+[node name="fish3D(1)" parent="Feesh" instance=ExtResource("1_40n67")]
+process_mode = 4
+visible = false
+script = null
+
+[node name="Plane_002" parent="Feesh/fish3D(1)" index="0"]
+transform = Transform3D(1.483, 0, 0, 0, -6.482399e-08, 1.483, 0, -1.483, -6.482399e-08, 0.195, 0.191, -0.012)
+
+[node name="Armature" parent="Feesh/fish3D(1)/Plane_002" index="0"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
+
+[node name="CameraContainer" type="Node3D" parent="."]
+script = ExtResource("4_aa47m")
+
+[node name="hRot" type="Node3D" parent="CameraContainer"]
+
+[node name="vRot" type="Node3D" parent="CameraContainer/hRot"]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraContainer/hRot/vRot"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+spring_length = 1.5
+margin = 1.0
+
+[node name="Camera3D" type="Camera3D" parent="CameraContainer/hRot/vRot/SpringArm3D"]
+current = true
+
+[node name="DebugCanvas" type="CanvasLayer" parent="."]
+
+[node name="DebugLabel" type="Label" parent="DebugCanvas"]
+offset_right = 40.0
+offset_bottom = 23.0
+text = "sample_text: 0.00000"
+script = ExtResource("5_6ajfv")
+metadata/_edit_use_anchors_ = true
+
+[connection signal="animation_finished" from="Feesh/fish3D(1)/AnimationPlayer" to="Feesh/fish3D(1)" method="_on_animation_player_animation_finished"]
+
+[editable path="Feesh/flatfish"]
+[editable path="Feesh/fish3D(1)"]

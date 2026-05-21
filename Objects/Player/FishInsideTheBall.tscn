@@ -1,0 +1,11 @@
+[gd_scene load_steps=2 format=3 uid="uid://capafa74hhf12"]
+
+[ext_resource type="PackedScene" uid="uid://ccfvwg8smq5tn" path="res://Imports/PModels/fishybusninenss.glb" id="1_mbyv6"]
+
+[node name="FishTest1" instance=ExtResource("1_mbyv6")]
+
+[node name="Skeleton3D" parent="Plane_002/Armature" index="0"]
+bones/0/rotation = Quaternion(-2.5244367e-09, 1.5564741e-09, -0.040270794, 0.9991888)
+bones/1/rotation = Quaternion(2.6916886e-08, -1.7836547e-16, -1.3326266e-16, 1)
+bones/2/rotation = Quaternion(0.98213637, 0.18817052, 5.754806e-09, -1.7193393e-08)
+bones/3/rotation = Quaternion(-5.4594695e-15, 2.0816683e-16, 1.3877772e-17, 1)

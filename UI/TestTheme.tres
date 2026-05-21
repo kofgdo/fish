@@ -1,0 +1,11 @@
+[gd_resource type="Theme" load_steps=3 format=3 uid="uid://c28cjl0co3fw0"]
+
+[ext_resource type="FontFile" uid="uid://bw03j4y8s6t8w" path="res://UI/Welcome Darling.otf" id="1_iveor"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_b43pc"]
+bg_color = Color(3.85046e-07, 0.27344006, 0.39877594, 1)
+
+[resource]
+default_font = ExtResource("1_iveor")
+default_font_size = 38
+Panel/styles/panel = SubResource("StyleBoxFlat_b43pc")

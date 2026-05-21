@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://c17gh3wre7tja"]
+
+[ext_resource type="PackedScene" uid="uid://c3ghsu1rf7ndc" path="res://Imports/EModels/rampa_solidify.glb" id="1_tlqqq"]
+
+[sub_resource type="PhysicsMaterial" id="PhysicsMaterial_36h16"]
+friction = 0.0
+
+[node name="rampa_solidify" instance=ExtResource("1_tlqqq")]
+
+[node name="StaticBody3D" parent="Plane_003" index="0"]
+physics_material_override = SubResource("PhysicsMaterial_36h16")

@@ -1,0 +1,18 @@
+[gd_scene load_steps=3 format=3 uid="uid://y3bokkhlnlnd"]
+
+[ext_resource type="PackedScene" uid="uid://bnebhfj885n3o" path="res://Imports/PModels/fish3D(1).glb" id="1_ltr5j"]
+[ext_resource type="Script" uid="uid://bean45v4dlyef" path="res://Objects/Player/visual_feesh.gd" id="2_huul5"]
+
+[node name="fish3D(1)" instance=ExtResource("1_ltr5j")]
+script = ExtResource("2_huul5")
+
+[node name="Skeleton3D" parent="Plane_002/Armature" index="0"]
+bones/0/position = Vector3(0.07591545, 0, 1.7763568e-15)
+bones/1/position = Vector3(-0.004331149, 0, 0)
+bones/1/rotation = Quaternion(0.5646551, 0.4257651, 0.564197, 0.42611077)
+bones/1/scale = Vector3(0.99999994, 1, 0.99999994)
+bones/2/rotation = Quaternion(9.724606e-05, 9.033192e-08, 0.11985805, 0.99279106)
+bones/3/position = Vector3(-0.004331149, 0, -1.110223e-16)
+bones/3/rotation = Quaternion(-0.55257845, -0.4432348, 0.5427075, 0.45129666)
+bones/3/scale = Vector3(1, 1, 1)
+bones/4/rotation = Quaternion(-0.0026268507, 9.325496e-08, 0.14572476, 0.98932177)

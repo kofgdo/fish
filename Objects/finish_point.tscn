@@ -1,0 +1,37 @@
+[gd_scene load_steps=3 format=3 uid="uid://c3tteu6778tk3"]
+
+[ext_resource type="Script" uid="uid://b06adqy6c87xm" path="res://Objects/finish_point.gd" id="1_0i487"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_iut43"]
+
+[node name="FinishPoint" type="Node3D"]
+script = ExtResource("1_0i487")
+
+[node name="FinishShape" type="CSGCylinder3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.0023927093, 0)
+use_collision = true
+collision_mask = 0
+radius = 0.292
+height = 0.35
+sides = 64
+
+[node name="FinishArea" type="Area3D" parent="." groups=["finishareas"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.18951726, 0)
+collision_layer = 4
+collision_mask = 2
+gravity_space_override = 3
+gravity_point = true
+gravity_point_center = Vector3(0, 0, 0)
+gravity_direction = Vector3(0, 0, 0)
+gravity = 7.83
+linear_damp_space_override = 3
+linear_damp = 3.0
+angular_damp_space_override = 3
+angular_damp = 3.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FinishArea"]
+transform = Transform3D(0.445, 0, 0, 0, 0.445, 0, 0, 0, 0.445, 0, 0, 0)
+shape = SubResource("SphereShape3D_iut43")
+
+[connection signal="body_entered" from="FinishArea" to="." method="_on_finish_area_body_entered"]
+[connection signal="body_exited" from="FinishArea" to="." method="_on_finish_area_body_exited"]
