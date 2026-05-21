@@ -49,3 +49,5 @@ func _on_finish_area_body_exited(body: Node3D) -> void:
 		finisharea.angular_damp_space_override = Area3D.SPACE_OVERRIDE_REPLACE
 	'''	
 	pass # Replace with function body.
+
+#EAHUDEHAUDHUASCMIAAAAAAAAAAAAAAAAAAU ENAHUAHEHUADS
