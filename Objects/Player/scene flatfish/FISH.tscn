@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://cthcofebefql8"]
+[gd_scene format=3 uid="uid://cthcofebefql8"]
 
 [ext_resource type="PackedScene" uid="uid://dhhphxaqsvpkv" path="res://Objects/Player/scene flatfish/fishFLAT.glb" id="1_ikx70"]
 
@@ -64,15 +64,14 @@ states/Swim/position = Vector2(471, 174)
 transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_ewej0"), "Idle", "Swim", SubResource("AnimationNodeStateMachineTransition_u6hup"), "Swim", "Idle", SubResource("AnimationNodeStateMachineTransition_cg3ss"), "Idle", "Flap", SubResource("AnimationNodeStateMachineTransition_mbsi0"), "Flap", "Idle", SubResource("AnimationNodeStateMachineTransition_h6vx0")]
 graph_offset = Vector2(-46, -42)
 
-[node name="flatfish" instance=ExtResource("1_ikx70")]
+[node name="flatfish" unique_id=1206772055 instance=ExtResource("1_ikx70")]
 
-[node name="Skeleton3D" parent="Armature" index="0"]
-bones/1/rotation = Quaternion(-0.6803871, 3.0611987e-19, 3.4975303e-19, 0.732853)
-bones/2/rotation = Quaternion(-0.00016663132, 1.0356399e-21, -4.5896545e-19, 1)
-bones/3/rotation = Quaternion(0.6451438, -4.2417664e-08, -6.51352e-08, 0.7640613)
-bones/4/rotation = Quaternion(-0.06347424, -6.563549e-09, -2.9653593e-08, 0.9979836)
+[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(389148711) index="0" unique_id=1113279101]
+bones/2/rotation = Quaternion(0.002077923, 2.6246894e-26, -4.6139137e-19, 0.99999785)
+bones/3/rotation = Quaternion(0.7071067, -5.338507e-08, -5.3385072e-08, 0.7071068)
+bones/4/rotation = Quaternion(-3.5527122e-15, -2.1316282e-14, -4.2351607e-22, 1)
 
-[node name="AnimationTree" type="AnimationTree" parent="." index="2"]
+[node name="AnimationTree" type="AnimationTree" parent="." index="2" unique_id=1196484033]
 tree_root = SubResource("AnimationNodeStateMachine_36rha")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Flap/TimeSeek/seek_request = -1.0
