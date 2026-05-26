@@ -185,7 +185,7 @@ func destroy_sphere():
 	#get_parent().
 	get_tree().root.find_child("Environment", true, false).add_child(new_fish)
 	fish_body.setup_fish_from_ball(self,last_linear_velocity,angular_velocity,fish_test_1.position+Vector3(0,0.3,0),fish_test_1.global_position,fish_test_1.rotation,fish_test_1.global_rotation,fish_test_1.scale, \
-	camera_container.camrot_h,camera_container.camrot_v,fish_test_1.supertorpedo_mode,fish_test_1.supertorpedo_speed,fish_test_1.max_supertorpedo_speed,skidmode, facingfish) #fish_test_1.global_transform.basis.z.normalized() )#fish_test_1.quaternion * fish_test_1.myforward)
+	camera_container.camrot_h,camera_container.camrot_v,fish_test_1.supertorpedo_mode,fish_test_1.supertorpedo_speed,fish_test_1.max_supertorpedo_speed,skidmode, facingfish)
 	
 	owner.queue_free()
 	
@@ -320,8 +320,9 @@ func movement_torque(delta):
 		
 		fish_test_1.quaternion = fish_test_1.quaternion.slerp(target_quat, fish_anim_rotation_speed * delta)
 		
-		var clean_basis : Basis = Basis(fish_test_1.quaternion)
-		facingfish = clean_basis.z.normalized()
+		#var clean_basis : Basis = Basis(fish_test_1.quaternion)
+		facingfish = Vector3(fish_test_1.nose_3d.global_position - fish_test_1.global_position).normalized()
+		# clean_basis.z.normalized()
 		# 2. Check your speed limit (using the dot product logic from before)
 		var current_speed_in_direction = linear_velocity.dot(move_direction*-1)
 		

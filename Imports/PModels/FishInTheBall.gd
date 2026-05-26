@@ -5,6 +5,7 @@ extends Node3D
 @onready var animation_player: AnimationPlayer = $AnimationPlayer
 @onready var animation_tree: AnimationTree = $AnimationTree
 @onready var playback = animation_tree["parameters/playback"]
+@onready var nose_3d: Node3D = $Armature/Skeleton3D/Cube/Nose3D
 
 var flat_forward : Vector3
 var raw_basis : Basis

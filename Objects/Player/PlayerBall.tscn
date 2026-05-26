@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://cpwqd8blsrjgf"]
+[gd_scene format=3 uid="uid://cpwqd8blsrjgf"]
 
 [ext_resource type="Script" uid="uid://cm3jv3jtvxfii" path="res://Objects/Player/finish_check_ray.gd" id="1_4ael5"]
 [ext_resource type="Texture2D" uid="uid://qwjkdkim688d" path="res://icon.svg" id="1_cj8me"]
@@ -26,72 +26,69 @@ transparency = 1
 albedo_color = Color(1, 1, 1, 0.23921569)
 albedo_texture = ExtResource("1_cj8me")
 
-[node name="PlayerBall" type="Node3D" groups=["player"]]
+[node name="PlayerBall" type="Node3D" unique_id=1778696299 groups=["player"]]
 
-[node name="flatfish" parent="." instance=ExtResource("1_hpa5k")]
+[node name="flatfish" parent="." unique_id=1913568479 instance=ExtResource("1_hpa5k")]
 transform = Transform3D(0.025, 0, 0, 0, 0.025, 0, 0, 0, 0.025, 0, 0, 0)
 script = ExtResource("2_mt1hp")
 
-[node name="Skeleton3D" parent="flatfish/Armature" index="0"]
-bones/1/rotation = Quaternion(-0.70857453, 3.2625314e-19, 3.2625314e-19, 0.70563596)
-bones/2/rotation = Quaternion(0.002077923, 2.6246894e-26, -4.6139137e-19, 0.99999785)
-bones/3/rotation = Quaternion(0.7071067, -5.338507e-08, -5.3385072e-08, 0.7071068)
-bones/4/rotation = Quaternion(-3.5527122e-15, -2.1316282e-14, -4.2351607e-22, 1)
+[node name="Nose3D" type="Node3D" parent="flatfish/Armature/Skeleton3D/Cube" parent_id_path=PackedInt32Array(1913568479, 2129040300) index="0" unique_id=1396763322]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -7.66274)
 
-[node name="AnimationTree" parent="flatfish" index="2"]
+[node name="AnimationTree" parent="flatfish" index="2" unique_id=1196484033]
 parameters/Flap/TimeScale/scale = 1.0
 
-[node name="FinishCheckRay" type="RayCast3D" parent="."]
+[node name="FinishCheckRay" type="RayCast3D" parent="." unique_id=1571679448]
 target_position = Vector3(0, -0.56, 0)
 collision_mask = 4
 collide_with_areas = true
 script = ExtResource("1_4ael5")
 
-[node name="GroundCheckRay" type="ShapeCast3D" parent="."]
+[node name="GroundCheckRay" type="ShapeCast3D" parent="." unique_id=1085865463]
 shape = SubResource("SphereShape3D_b36pd")
 target_position = Vector3(0, -0.1, 0)
 collision_mask = 9
 collide_with_areas = true
 script = ExtResource("1_s8vgd")
 
-[node name="Marble" type="RigidBody3D" parent="."]
+[node name="Marble" type="RigidBody3D" parent="." unique_id=1241839302]
 collision_layer = 2
 physics_material_override = SubResource("PhysicsMaterial_mt1hp")
 continuous_cd = true
 linear_damp = 0.25
 script = ExtResource("1_par3p")
 
-[node name="ball3d" parent="Marble" instance=ExtResource("4_b36pd")]
+[node name="ball3d" parent="Marble" unique_id=265938597 instance=ExtResource("4_b36pd")]
 transform = Transform3D(0.087, 0, 0, 0, 0.087, 0, 0, 0, 0.087, -0.006422013, 0, 0.013007715)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Marble"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Marble" unique_id=850268041]
 transform = Transform3D(0.56, 0, 0, 0, 0.56, 0, 0, 0, 0.56, 0, 0, 0)
 shape = SubResource("SphereShape3D_xlixd")
 debug_fill = false
 
-[node name="MeshInstance3D" type="MeshInstance3D" parent="Marble"]
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Marble" unique_id=734886371]
 transform = Transform3D(0.51, 0, 0, 0, 0.51, 0, 0, 0, 0.51, 0, 0, 0)
 mesh = SubResource("SphereMesh_par3p")
 surface_material_override/0 = SubResource("StandardMaterial3D_s8vgd")
 
-[node name="CameraContainer" type="Node3D" parent="."]
+[node name="CameraContainer" type="Node3D" parent="." unique_id=932771509]
 script = ExtResource("2_xlixd")
 
-[node name="hRot" type="Node3D" parent="CameraContainer"]
+[node name="hRot" type="Node3D" parent="CameraContainer" unique_id=5287146]
 
-[node name="vRot" type="Node3D" parent="CameraContainer/hRot"]
+[node name="vRot" type="Node3D" parent="CameraContainer/hRot" unique_id=402478111]
 
-[node name="SpringArm3D" type="SpringArm3D" parent="CameraContainer/hRot/vRot"]
+[node name="SpringArm3D" type="SpringArm3D" parent="CameraContainer/hRot/vRot" unique_id=1718513447]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
 spring_length = 1.5
 margin = 1.0
 
-[node name="Camera3D" type="Camera3D" parent="CameraContainer/hRot/vRot/SpringArm3D"]
+[node name="Camera3D" type="Camera3D" parent="CameraContainer/hRot/vRot/SpringArm3D" unique_id=360551203]
 current = true
 
-[node name="DebugCanvas" type="CanvasLayer" parent="."]
+[node name="DebugCanvas" type="CanvasLayer" parent="." unique_id=1718537568]
 
-[node name="DebugLabel" type="Label" parent="DebugCanvas"]
+[node name="DebugLabel" type="Label" parent="DebugCanvas" unique_id=1390159476]
 offset_right = 40.0
 offset_bottom = 23.0
 text = "sample_text: 0.00000"

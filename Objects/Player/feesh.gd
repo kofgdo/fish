@@ -6,7 +6,8 @@ class_name Fish
 @export var jump_power : float = 100 
 @export var jump_power_air_factor : float = 0.3
 @export var supertorpedo_drill_speed : float = 50
-@export var supertorpedo_drill_turnrate : float = 1
+@export var supertorpedo_drill_turnrate : float = 5
+@export var supertorpedo_velimit : float = 0.33
 var supertorpedo_auto : bool = false
 #@export var finish_deceleration : float = .25
 @export var scoot_power : float = 4
@@ -64,7 +65,7 @@ var level_finish_cooldown_tickstate : int = 0 # -1 = just got in, 0 = idle, 1 = 
 @onready var ground_check_ray_plus: RayCast3D = $GroundCheckRayPlus
 @onready var ground_check_ray_minus: RayCast3D = $GroundCheckRayMinus
 @onready var playback = animation_tree["parameters/playback"]
-
+@onready var nose_3d: Node3D = $flatfish/Armature/Skeleton3D/Cube/Nose3D
 
 var flapstate : int = 0 # 0 = idle, 1 = loading flap, -1 = flap cooldown 
 
@@ -427,8 +428,8 @@ func _physics_process(delta):
 	#if raycheckgrounded == true
 	if contactgrounded == true:
 		groundtimer=coyotetime
-		if animation_player.current_animation == "fall" or (animation_player.current_animation == "swim" and air_swim_mode == false):
-			animation_player.play("splat")
+		#if animation_player.current_animation == "fall" or (animation_player.current_animation == "swim" and air_swim_mode == false):
+		#	animation_player.play("splat")
 		
 	else:
 		groundtimer=clamp(groundtimer-1,0,coyotetime)
@@ -436,10 +437,10 @@ func _physics_process(delta):
 		#	animation_player.play("fall")
 	if groundtimer > 0: 
 		grounded = true
-		gravity_scale=1
+		#gravity_scale=1
 	else:
 		grounded = false
-		gravity_scale=0.5
+		#gravity_scale=0.5
 	
 	if can_move:
 		#movement(delta)
@@ -459,8 +460,13 @@ func _physics_process(delta):
 		var collided_area = target_collided.get_node("../FinishArea")
 		global_position = collided_area.global_position + collided_area.gravity_point_center
 		level_manager.latestcheckpoint = global_position"""
-				
-	linear_velocity.x = clamp(linear_velocity.x, -max_velocity, max_velocity)
+	var supvl = 1
+	if supertorpedo_auto == true:
+		supvl=supertorpedo_velimit
+	linear_velocity.x = clamp(linear_velocity.x, -max_velocity*supvl, max_velocity*supvl)
+	linear_velocity.z = clamp(linear_velocity.z, -max_velocity*supvl, max_velocity*supvl)
+	#if linear_velocity.x > max_velocity*supertorpedo_velimit:
+		#linear_velocity
 	
 	if Input.is_action_just_released("jump"):
 		if flapstate==0 or flapstate==-1:
@@ -522,8 +528,8 @@ func _physics_process(delta):
 		if (Input.is_action_just_pressed("up") or Input.is_action_just_pressed("down") or plus or minus):
 			supertorpedo_auto=false
 			supertorpedo_speed/=2
-		apply_central_force(-basis.z * supertorpedo_drill_speed)
-		gravity_scale = 0.1
+		#apply_central_force(-basis.z * supertorpedo_drill_speed)
+		gravity_scale = 0.25
 		linear_damp = 0.1
 		
 	else:
