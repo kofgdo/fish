@@ -67,7 +67,7 @@ size = Vector3(0.44, 0.315, 0.085)
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_fscrp"]
 radius = 0.03
-height = 0.443
+height = 0.3
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_8x8cr"]
 size = Vector3(1, 0.5, 4)
@@ -189,7 +189,7 @@ shape = SubResource("BoxShape3D_slhfj")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 
 [node name="C_Tail_Far_ROUNDL" type="CollisionShape3D" parent="Feesh" unique_id=468402394]
-transform = Transform3D(0.7193397, -0.6946583, 3.036448e-08, 0, -4.371138e-08, -0.9999999, 0.69465834, 0.71933967, -3.144334e-08, -0.6922364, 0.0009699799, 1.987426)
+transform = Transform3D(0.7193397, -0.6946583, 3.036448e-08, 0, -4.371138e-08, -0.9999999, 0.69465834, 0.71933967, -3.144334e-08, -0.59333056, 0.0009699799, 1.851164)
 shape = SubResource("CapsuleShape3D_fscrp")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 
@@ -199,7 +199,7 @@ shape = SubResource("BoxShape3D_slhfj")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 
 [node name="C_Tail_Far_ROUNDR" type="CollisionShape3D" parent="Feesh" unique_id=2139419226]
-transform = Transform3D(0.7071067, 0.70710665, -3.0908616e-08, 0, -4.371138e-08, -0.9999999, -0.7071067, 0.70710665, -3.0908616e-08, 0.69486207, 0.0009699799, 1.9978039)
+transform = Transform3D(0.7071067, 0.70710665, -3.0908616e-08, 0, -4.371138e-08, -0.9999999, -0.7071067, 0.70710665, -3.0908616e-08, 0.5932806, 0.0009699799, 1.8565993)
 shape = SubResource("CapsuleShape3D_fscrp")
 debug_color = Color(0, 0.6, 0.69803923, 1)
 

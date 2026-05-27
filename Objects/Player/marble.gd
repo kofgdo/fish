@@ -276,7 +276,7 @@ func movement_torque(delta):
 	var f_input = Input.get_action_raw_strength("forward") - Input.get_action_raw_strength("backward")
 	var h_input = Input.get_action_raw_strength("left") - Input.get_action_raw_strength("right")
 	
-	if Input.is_action_just_pressed("break") == true or (level_finished==false and dontbreakframes==-1 and fish_test_1.supertorpedo_mode>=supertorpedo_threshold):
+	if Input.is_action_just_pressed("break") == true and level_finished==false and dontbreakframes==-1:
 		destroy_sphere()
 	
 	#var as_d_input = Input.get_action_raw_strength("ANGULAR speed down") - Input.get_action_raw_strength("ANGULAR speed up")

@@ -97,7 +97,7 @@ var supertorpedo_speed_deaccel : float = 0.1
 var max_supertorpedo_speed : float = 0.35
 var supertorpedo_buffer : int = 0
 var supertorpedo_max_buffer : int = 30
-
+var supertorpedo_fromball_buffer : int = 20
 
 var torpedo_target = 0 # 90 degrees RIGHT or LEFT
 var torpedo_left = -1
@@ -142,10 +142,10 @@ func setup_fish_from_ball(ballnode : Node3D, livel : Vector3, anvel : Vector3, p
 	
 	linear_velocity = livel
 	
-	if supertorpspeed >= supertorpmaxspeed or supertorpspeed<=-supertorpmaxspeed:
-		supertorpedo_auto=true
+	#if supertorpspeed >= supertorpmaxspeed or supertorpspeed<=-supertorpmaxspeed:
+	#	supertorpedo_auto=true
 		
-		print("torpedoauto")
+	#	print("torpedoauto")
 	linear_velocity += facing * supertorpspeed/3 #10 = break speedadd
 	
 		
@@ -220,10 +220,10 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 		plus = true
 		# THIS IS TO STICK TO RAILS
 		#'''
-		if Input.get_action_raw_strength("backward") - Input.get_action_raw_strength("forward")==0:
-			var current_velocity = state.linear_velocity
-			var sliding_velocity = current_velocity - normal * current_velocity.dot(normal)
-			state.linear_velocity = sliding_velocity
+		#if Input.get_action_raw_strength("backward") - Input.get_action_raw_strength("forward")==0:
+		var current_velocity = state.linear_velocity
+		var sliding_velocity = current_velocity - normal * current_velocity.dot(normal)
+		state.linear_velocity = sliding_velocity
 		#'''
 	else:
 		plus = false
@@ -278,8 +278,12 @@ func _physics_process(delta):
 	#region torpedo	
 	var torpedo_left_input = Input.get_action_raw_strength("up")
 	var torpedo_right_input = Input.get_action_raw_strength("down")
+	var break_input = Input.get_action_raw_strength("break")
+	supertorpedo_fromball_buffer=clamp(supertorpedo_fromball_buffer-1,-600,60)
+	if supertorpedo_fromball_buffer==0 and Input.is_action_pressed("break"):
+		supertorpedo_auto = true
 	
-	if ((torpedo_right_input and torpedo_left_input) or supertorpedo_auto) and !plus and !minus:
+	if (((torpedo_right_input and torpedo_left_input) or (break_input and supertorpedo_fromball_buffer<=-20)) or supertorpedo_auto) and !plus and !minus:
 		if supertorpedo_mode==-1: #this decides the angle of tilt
 			supertorpedo_mode=0
 			supertorpedo_buffer=supertorpedo_max_buffer
@@ -374,62 +378,12 @@ func _physics_process(delta):
 			rotation.z=lerp_angle(rotation.z,torpedo_target,0.2)
 	#rotation.z += torpedo_correction_turbo/100
 	
-	#var target_transform = global_transform.looking_at(global_position + linear_velocity.normalized()*Vector3(-1,0,-1), Vector3.UP)
-	#var target_quat = Quaternion(Vector3.UP, PI) * target_transform.basis.get_rotation_quaternion() * Quaternion(Vector3.FORWARD, deg_to_rad(90)) * Quaternion(Vector3.FORWARD, deg_to_rad(torpedo_correction_turbo))
-	#quaternion = quaternion.slerp(target_quat, fish_anim_rotation_speed * delta)
-	
-	if Input.is_action_just_pressed("swim"):
-		if air_swim_mode == false:
-			air_swim_mode = true
-		else: 
-			air_swim_mode = false
-	
-	if air_swim_mode == true:
-		if grounded == true:
-			flying_fish = true
-		else:
-			flying_fish = false
-	
-	#print("can move",can_move)	
-	#print("level finish cooldown tickstate",level_finish_cooldown_tickstate)	
-	#print("level finished",level_finished)	
-	'''
-	collision_shape_3d_t_1.global_position = global_position
-	collision_shape_3d_t_2.global_position = global_position
-	collision_shape_3d_h_1.global_position = global_position
-	collision_shape_3d_h_2.global_position = global_position
-	collision_shape_3d.global_position = global_position
-	collision_shape_3d_t_1.rotation = rotation
-	collision_shape_3d_t_2.rotation = rotation
-	collision_shape_3d_h_1.rotation = rotation
-	collision_shape_3d_h_2.rotation = rotation
-	collision_shape_3d.rotation = rotation
-	'''
+
 	fish_test_1.position = position
 	fish_test_1.rotation = rotation
-	
-	if playback.get_current_node() == "Flap":
-		pass
-		#tail_bone.override_pose = true
-		#central_tail_bone.override_pose = true
-		#head_bone.override_pose = true
-		#central_head_bone.override_pose = true
-	else:
-		pass
-		#tail_bone.transform = Transform3D.IDENTITY
-		#central_tail_bone.transform = Transform3D.IDENTITY
-		#head_bone.transform = Transform3D.IDENTITY
-		#central_head_bone.transform = Transform3D.IDENTITY
-	if playback.get_current_node() == "Swim":
-		animation_player.speed_scale = air_swim_speed * 5
-	else:
-		animation_player.speed_scale = 1
-	
-	#if raycheckgrounded == true
+
 	if contactgrounded == true:
 		groundtimer=coyotetime
-		#if animation_player.current_animation == "fall" or (animation_player.current_animation == "swim" and air_swim_mode == false):
-		#	animation_player.play("splat")
 		
 	else:
 		groundtimer=clamp(groundtimer-1,0,coyotetime)
@@ -468,7 +422,7 @@ func _physics_process(delta):
 	#if linear_velocity.x > max_velocity*supertorpedo_velimit:
 		#linear_velocity
 	
-	if Input.is_action_just_released("jump"):
+	if Input.is_action_just_released("jump") or Input.is_action_just_released("counterjump"):
 		if flapstate==0 or flapstate==-1:
 			pass
 		else:
@@ -483,19 +437,25 @@ func _physics_process(delta):
 			jump()
 			hogginground = hogginground_cooldownmax
 		
-	if Input.is_action_pressed("jump") and flapstate==0: # and level_finish_cooldown_tickstate!=-1:
+	if (Input.is_action_pressed("jump") or Input.is_action_pressed("counterjump")) and flapstate==0: # and level_finish_cooldown_tickstate!=-1:
 		flapstate=1
-		playback.travel("Flap")
-		animation_tree.set("parameters/Flap/TimeSeek/seek_request", 0)
-		animation_tree.set("parameters/Flap/TimeScale/scale", 3.0)
+		if Input.is_action_pressed("jump"):
+			
+			playback.travel("Flap")
+			animation_tree.set("parameters/Flap/TimeSeek/seek_request", 0)
+			animation_tree.set("parameters/Flap/TimeScale/scale", 3.0)
+		else:
+			playback.travel("InvFlap")
+			animation_tree.set("parameters/InvFlap/TimeSeek/seek_request", 0)
+			animation_tree.set("parameters/InvFlap/TimeScale/scale", 3.0)
 		#animation_player.speed_scale = 1.5
 		#animation_player.seek(0.166, true)
-		
+	'''	
 	if Input.is_action_pressed("swim"):
 		air_swim_mode=true	
 	else:
 		air_swim_mode=false		
-		
+	'''	
 	if (scooting==scoot_cooldown or scooting==-scoot_cooldown):
 		
 		var scootdir = 0
@@ -520,7 +480,7 @@ func _physics_process(delta):
 		elif torpedo_left_input:
 			apply_central_impulse(-basis.x  * passive_scoot_power)
 			
-	if supertorpedo_speed == max_supertorpedo_speed or supertorpedo_speed == -max_supertorpedo_speed:
+	if supertorpedo_fromball_buffer <=0 and (supertorpedo_speed == max_supertorpedo_speed or supertorpedo_speed == -max_supertorpedo_speed):
 		supertorpedo_auto = true
 		
 		print("drill ON")

@@ -10,7 +10,7 @@ animation = &"Flap"
 [sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_ewej0"]
 
 [sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_iovtc"]
-graph_offset = Vector2(-403.3626, 55.169403)
+graph_offset = Vector2(-422.60236, 47.608543)
 nodes/output/position = Vector2(400, 160)
 nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_ewej0")
 nodes/TimeSeek/position = Vector2(180, 140)
@@ -22,6 +22,24 @@ node_connections = [&"output", 0, &"TimeSeek", &"TimeSeek", 0, &"TimeScale", &"T
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_36rha"]
 animation = &"Idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_iovtc"]
+animation = &"Flap_Inverted"
+
+[sub_resource type="AnimationNodeTimeScale" id="AnimationNodeTimeScale_l4ew8"]
+
+[sub_resource type="AnimationNodeTimeSeek" id="AnimationNodeTimeSeek_610qn"]
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree_2jodj"]
+graph_offset = Vector2(-152.72705, -3.0726929)
+nodes/output/position = Vector2(740, 100)
+nodes/Animation/node = SubResource("AnimationNodeAnimation_iovtc")
+nodes/Animation/position = Vector2(120, 80)
+nodes/TimeScale/node = SubResource("AnimationNodeTimeScale_l4ew8")
+nodes/TimeScale/position = Vector2(337.3458, 103.65639)
+nodes/TimeSeek/node = SubResource("AnimationNodeTimeSeek_610qn")
+nodes/TimeSeek/position = Vector2(540, 40)
+node_connections = [&"output", 0, &"TimeSeek", &"TimeScale", 0, &"Animation", &"TimeSeek", 0, &"TimeScale"]
 
 [sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_l4ew8"]
 animation = &"Swim"
@@ -53,20 +71,28 @@ advance_mode = 2
 switch_mode = 2
 advance_mode = 2
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_qgm2f"]
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_vxqsb"]
+switch_mode = 2
+advance_mode = 2
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_36rha"]
 states/Flap/node = SubResource("AnimationNodeBlendTree_iovtc")
-states/Flap/position = Vector2(471, 43)
+states/Flap/position = Vector2(504, 35)
 states/Idle/node = SubResource("AnimationNodeAnimation_36rha")
 states/Idle/position = Vector2(355, 100)
+states/InvFlap/node = SubResource("AnimationNodeBlendTree_2jodj")
+states/InvFlap/position = Vector2(379, 1)
 states/Start/position = Vector2(209, 100)
 states/Swim/node = SubResource("AnimationNodeBlendTree_qgm2f")
 states/Swim/position = Vector2(471, 174)
-transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_ewej0"), "Idle", "Swim", SubResource("AnimationNodeStateMachineTransition_u6hup"), "Swim", "Idle", SubResource("AnimationNodeStateMachineTransition_cg3ss"), "Idle", "Flap", SubResource("AnimationNodeStateMachineTransition_mbsi0"), "Flap", "Idle", SubResource("AnimationNodeStateMachineTransition_h6vx0")]
-graph_offset = Vector2(-46, -42)
+transitions = ["Start", "Idle", SubResource("AnimationNodeStateMachineTransition_ewej0"), "Idle", "Swim", SubResource("AnimationNodeStateMachineTransition_u6hup"), "Swim", "Idle", SubResource("AnimationNodeStateMachineTransition_cg3ss"), "Idle", "Flap", SubResource("AnimationNodeStateMachineTransition_mbsi0"), "Flap", "Idle", SubResource("AnimationNodeStateMachineTransition_h6vx0"), "Idle", "InvFlap", SubResource("AnimationNodeStateMachineTransition_qgm2f"), "InvFlap", "Idle", SubResource("AnimationNodeStateMachineTransition_vxqsb")]
+graph_offset = Vector2(7, -54)
 
 [node name="flatfish" unique_id=1206772055 instance=ExtResource("1_ikx70")]
 
-[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(389148711) index="0" unique_id=1113279101]
+[node name="Skeleton3D" parent="Armature" parent_id_path=PackedInt32Array(171395212) index="0" unique_id=593156311]
 bones/2/rotation = Quaternion(0.002077923, 2.6246894e-26, -4.6139137e-19, 0.99999785)
 bones/3/rotation = Quaternion(0.7071067, -5.338507e-08, -5.3385072e-08, 0.7071068)
 bones/4/rotation = Quaternion(-3.5527122e-15, -2.1316282e-14, -4.2351607e-22, 1)
@@ -76,5 +102,7 @@ tree_root = SubResource("AnimationNodeStateMachine_36rha")
 anim_player = NodePath("../AnimationPlayer")
 parameters/Flap/TimeSeek/seek_request = -1.0
 parameters/Flap/TimeScale/scale = 2.0
+parameters/InvFlap/TimeScale/scale = 2.0
+parameters/InvFlap/TimeSeek/seek_request = -1.0
 parameters/Swim/TimeScale/scale = 1.0
 parameters/Swim/TimeSeek/seek_request = -1.0

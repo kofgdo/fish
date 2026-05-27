@@ -21,7 +21,7 @@ var supertorpedo_speed_deaccel : float = 0.1
 var max_supertorpedo_speed : float = 12.0
 var supertorpedo_buffer : int = 0
 var supertorpedo_max_buffer : int = 30
-
+var supertorpedo_auto : bool = false
 
 var torpedo_target = 0 # 90 degrees RIGHT or LEFT
 var torpedo_left = -1
@@ -43,10 +43,12 @@ func _process(delta: float) -> void:
 	global_position = mesh_instance_3d.global_position
 	
 	#region torpedo
+	if (Input.is_action_just_pressed("up") or Input.is_action_just_pressed("down")) and supertorpedo_auto == true:
+		supertorpedo_auto = false
 	var torpedo_left_input = Input.get_action_raw_strength("up")
 	var torpedo_right_input = Input.get_action_raw_strength("down")
 	
-	if torpedo_right_input and torpedo_left_input:
+	if (torpedo_right_input and torpedo_left_input) or supertorpedo_auto==true:
 		if supertorpedo_mode==-1: #this decides the angle of tilt
 			supertorpedo_mode=0
 			supertorpedo_buffer=supertorpedo_max_buffer
@@ -68,6 +70,8 @@ func _process(delta: float) -> void:
 				supertorpedo_speed-=supertorpedo_accel
 			supertorpedo_speed=clamp(supertorpedo_speed,-max_supertorpedo_speed,max_supertorpedo_speed)
 			supertorpedo_angle+=supertorpedo_speed
+			if supertorpedo_speed==max_supertorpedo_speed or supertorpedo_speed==-max_supertorpedo_speed:
+				supertorpedo_auto = true
 			
 	else:
 		supertorpedo_buffer=clamp(supertorpedo_buffer-1,0,supertorpedo_max_buffer)
@@ -84,7 +88,7 @@ func _process(delta: float) -> void:
 			supertorpedo_angle=0
 		
 	
-	if torpedo_left_input and !torpedo_right_input: #TORPEDO INPUT PRESSED
+	if torpedo_left_input and !torpedo_right_input and !supertorpedo_auto: #TORPEDO INPUT PRESSED
 		if torpedo_left==-1:
 			torpedo_left=torpedo_max_buffer
 			if !supertorpedo_buffer>0:
@@ -106,7 +110,7 @@ func _process(delta: float) -> void:
 			
 		torpedo_left=-1
 		
-	if torpedo_right_input and !torpedo_left_input: #TORPEDO INPUT PRESSED
+	if torpedo_right_input and !torpedo_left_input and !supertorpedo_auto: #TORPEDO INPUT PRESSED
 		if torpedo_right==-1:
 			torpedo_right=torpedo_max_buffer
 			if !supertorpedo_buffer>0:
