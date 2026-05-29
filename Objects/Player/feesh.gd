@@ -1,13 +1,19 @@
 extends RigidBody3D
 class_name Fish
 
+var init_livel
+var init_supertorpspeed
+var init_facing
+var init_tiltup
+var init : bool = true
+
 #@export var movement_speed: float = 500.0 #385.0
 @export var max_velocity: float = 15
-@export var jump_power : float = 100 
-@export var jump_power_air_factor : float = 0.3
+@export var jump_power : float = 50 
+@export var jump_power_air_factor : float = 1#0.3
 @export var supertorpedo_drill_speed : float = 50
 @export var supertorpedo_drill_turnrate : float = 5
-@export var supertorpedo_velimit : float = 0.33
+@export var supertorpedo_velimit : float = 0.5
 var supertorpedo_auto : bool = false
 #@export var finish_deceleration : float = .25
 @export var scoot_power : float = 4
@@ -94,10 +100,16 @@ var supertorpedo_angle : float = 0
 var supertorpedo_accel : float = 0.0125
 var supertorpedo_speed : float = 0
 var supertorpedo_speed_deaccel : float = 0.1
-var max_supertorpedo_speed : float = 0.35
+var max_supertorpedo_speed : float = 0.5#0.35
 var supertorpedo_buffer : int = 0
 var supertorpedo_max_buffer : int = 30
 var supertorpedo_fromball_buffer : int = 20
+var supertorpedo_current_pitch_angle: float = 0.0
+var total_supertorpedo_roll: float = 0.0
+var supertorpedo_superspeedfactor: float = 50.0
+var supertorpedo_plummetcel: float = 1.0
+var supertorpedo_stallcel: float = 10.0
+var supertorpedo_drill_vturnfactor=0.5
 
 var torpedo_target = 0 # 90 degrees RIGHT or LEFT
 var torpedo_left = -1
@@ -135,31 +147,52 @@ func re_sphere():
 	owner.queue_free()
 	
 func setup_fish_from_ball(ballnode : Node3D, livel : Vector3, anvel : Vector3, pos : Vector3, gpos : Vector3, rot : Vector3, grot : Vector3, sca : Vector3 \
-, crh : float , crv : float, supertorpmode : int, supertorpspeed : float, supertorpmaxspeed : float, skidangle : int, facing : Vector3):
+, crh : float , crv : float, supertorpmode : int, supertorpspeed : float, supertorpmaxspeed : float, skidangle : int, facing : Vector3, tiltup : float):
 		
 	#camera_container.cambigsmooth=90
 	#camera_container.camlock=5
 	
-	linear_velocity = livel
 	
-	#if supertorpspeed >= supertorpmaxspeed or supertorpspeed<=-supertorpmaxspeed:
-	#	supertorpedo_auto=true
+	rotation = rot 
+	
+	global_rotation = grot #+ Quaternion(Vector3.FORWARD, deg_to_rad(90))
+	
+	if supertorpspeed >= supertorpmaxspeed or supertorpspeed<=-supertorpmaxspeed:
+		#supertorpedo_auto=true
+		
+		pass
+	
+		
 		
 	#	print("torpedoauto")
-	linear_velocity += facing * supertorpspeed/3 #10 = break speedadd
+	
 	
 		
 	#angular_velocity = anvel
 	global_position = gpos
 	position = pos
-	rotation = rot 
 	
-	global_rotation = grot #+ Quaternion(Vector3.FORWARD, deg_to_rad(90))
+	
+	
 	
 	camera_container.camrot_h = crh
 	camera_container.camrot_v = crv
 	
+	
+	
 	fish_size = sca.x #this is vector3
+	
+	
+	
+	init = true
+	init_livel = livel
+	init_tiltup = tiltup
+	init_facing = facing
+	init_supertorpspeed = abs(supertorpspeed)
+	
+	print(str(init_supertorpspeed)  + "LAUNCH")
+	
+	
 	playback.travel("Swim")
 	print("ok")
 
@@ -178,9 +211,105 @@ func _ready() -> void:
 func _integrate_forces(state: PhysicsDirectBodyState3D):
 	land_vspeed_dampen_cooldown=clamp(land_vspeed_dampen_cooldown-1,0,land_vspeed_dampen_cooldown_max)
 	
+	if init:
+		linear_velocity = init_livel
+		linear_velocity += init_facing * init_supertorpspeed/3 #10 = break speedadd
+		init=false
 	var f_input = Input.get_action_raw_strength("forward") - Input.get_action_raw_strength("backward")
 	var h_input = Input.get_action_raw_strength("left") - Input.get_action_raw_strength("right")
 	#GOGO
+	if supertorpedo_auto:
+		# 1. SAVE THE ORIGINAL SCALE
+		var original_scale = state.transform.basis.get_scale()
+		
+		# --- STRIP THE TORPEDO ROLL TO CALCULATE STEERING SAFELY ---
+		var current_fwd = -state.transform.basis.z.normalized()
+		
+		# 2. Track our pitch angle directly using math instead of vectors
+		var current_pitch_rad = asin(current_fwd.y)
+		
+		# 3. Calculate the player's intended pitch change
+		var pitch_change = f_input * supertorpedo_drill_turnrate*supertorpedo_drill_vturnfactor * state.step
+		
+		# 4. STRICT CLAMP: Set a hard limit at ~70 degrees (1.22 radians)
+		var target_pitch_rad = clamp(current_pitch_rad + pitch_change, -1.22, 1.22)
+		
+		# 5. Calculate global horizontal steering (Yaw around Vector3.UP)
+		var yaw_quat = Quaternion(Vector3.UP, h_input * supertorpedo_drill_turnrate * state.step)
+		
+		# 6. Apply yaw to our current orientation FIRST
+		var rotated_quat = yaw_quat * state.transform.basis.get_rotation_quaternion()
+		var temporary_basis = Basis(rotated_quat)
+		
+		# 7. Reconstruct a clean, un-rolled forward heading on the ground
+		var temp_fwd = -temporary_basis.z.normalized()
+		var flat_heading = Vector3(temp_fwd.x, 0.0, temp_fwd.z).normalized()
+		if flat_heading.is_zero_approx():
+			flat_heading = Vector3.FORWARD
+			
+		var steady_right_axis = Vector3.UP.cross(flat_heading).normalized()
+		
+		# 8. BUILD THE FINAL DIRECTION VECTOR
+		var final_fwd = (flat_heading * cos(target_pitch_rad)) + (Vector3.UP * sin(target_pitch_rad))
+		final_fwd = final_fwd.normalized()
+		
+		# 9. RECONSTRUCT THE STEERING BASIS MATRIX FROM SCRATCH
+		var new_z = -final_fwd
+		var new_y = steady_right_axis.cross(new_z).normalized()
+		var new_x = new_y.cross(new_z).normalized()
+		
+		var clean_steering_basis = Basis(new_x, new_y, new_z)
+		
+		# --- FIXED TORPEDO ROLL MECHANIC ---
+		
+		# 10. Accumulate the spinning angle over time so it never resets
+		total_supertorpedo_roll -= supertorpedo_speed*supertorpedo_superspeedfactor * state.step
+		
+		# Wrap the angle around 360 degrees (2*PI radians) to keep the math clean
+		total_supertorpedo_roll = fmod(total_supertorpedo_roll, TAU)
+		
+		# 11. Create a roll quaternion using the TOTAL accumulated angle
+		var roll_quat = Quaternion(Vector3.FORWARD, total_supertorpedo_roll)
+		
+		# 12. Combine them: Clean global heading * accumulated local roll
+		state.transform.basis = clean_steering_basis * Basis(roll_quat)
+		
+		# 13. Restore the scale safely
+		state.transform.basis = state.transform.basis.scaled(original_scale)
+		
+		# 6. GET THE NEW NOSE DIRECTION
+		var raw_fwd = -state.transform.basis.z.normalized()
+		
+		# 7. CALCULATE HORIZONTAL SPEED ONLY 
+		var horizontal_velocity = Vector3(state.linear_velocity.x, 0.0, state.linear_velocity.z)
+		var current_horizontal_speed = horizontal_velocity.length()
+		
+		if current_horizontal_speed < 0.01:
+			current_horizontal_speed = 0.01 
+		
+		# 8. APPLY THE STALL & DIVE INFLUENCE
+		var pitch_factor = raw_fwd.y
+		var adjusted_speed = current_horizontal_speed
+		'''
+		if pitch_factor > 0:
+			adjusted_speed -= pitch_factor * supertorpedo_plummetcel
+		else:
+			adjusted_speed -= pitch_factor * supertorpedo_stallcel
+		'''
+		adjusted_speed = max(adjusted_speed, 2.0)
+		
+		# 9. APPLY THE HORIZONTAL MOVEMENTS
+		var flat_fwd = Vector3(raw_fwd.x, 0.0, raw_fwd.z).normalized()
+		state.linear_velocity.x = flat_fwd.x * adjusted_speed
+		state.linear_velocity.z = flat_fwd.z * adjusted_speed
+		
+		# 10. APPLY THE VERTICAL MOMENTUM 
+		var gravity_modifier = pitch_factor * 5.0
+		state.linear_velocity.y += (gravity_modifier * state.step)
+		
+		# Kill the gyroscopic wobble
+		state.angular_velocity = Vector3.ZERO
+	'''
 	var current_speed = state.linear_velocity.length()
 	var fwd_dir = -global_basis.z.normalized()
 	if supertorpedo_auto:
@@ -199,6 +328,8 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 		#state.transform.basis = state.transform.basis.orthonormalized() # Keep math clean
 		#state.linear_velocity = fwd_dir * current_speed
 		state.angular_velocity = Vector3.ZERO
+	'''
+	
 	
 	'''if (ground_check_ray_minus.is_colliding() or ground_check_ray_plus.is_colliding()) and hogginground == 0:
 		var normal
@@ -429,15 +560,15 @@ func _physics_process(delta):
 			flapstate=-1
 		
 			
-			playback.travel("Flap")
+			#playback.travel("Flap")
 			#animation_tree.set("parameters/Flap/TimeSeek/seek_request", 0.15)
 			animation_tree.set("parameters/Flap/TimeScale/scale", 1.0)
-				
+			animation_tree.set("parameters/InvFlap/TimeScale/scale", 1.0)	
 			
 			jump()
 			hogginground = hogginground_cooldownmax
 		
-	if (Input.is_action_pressed("jump") or Input.is_action_pressed("counterjump")) and flapstate==0: # and level_finish_cooldown_tickstate!=-1:
+	if (Input.is_action_just_pressed("jump") or Input.is_action_just_pressed("counterjump")) and flapstate==0: # and level_finish_cooldown_tickstate!=-1:
 		flapstate=1
 		if Input.is_action_pressed("jump"):
 			
@@ -450,12 +581,7 @@ func _physics_process(delta):
 			animation_tree.set("parameters/InvFlap/TimeScale/scale", 3.0)
 		#animation_player.speed_scale = 1.5
 		#animation_player.seek(0.166, true)
-	'''	
-	if Input.is_action_pressed("swim"):
-		air_swim_mode=true	
-	else:
-		air_swim_mode=false		
-	'''	
+
 	if (scooting==scoot_cooldown or scooting==-scoot_cooldown):
 		
 		var scootdir = 0
@@ -473,7 +599,7 @@ func _physics_process(delta):
 		else:
 			scooting+=1
 	if (minus or plus):
-		if torpedo_left_input and torpedo_right_input:
+		if (torpedo_left_input and torpedo_right_input) or Input.is_action_pressed("break"):
 			apply_central_impulse(-basis.z  * passive_scoot_power)
 		elif torpedo_right_input:
 			apply_central_impulse(basis.x  * passive_scoot_power)
@@ -485,15 +611,15 @@ func _physics_process(delta):
 		
 		print("drill ON")
 	if supertorpedo_auto == true:
-		if (Input.is_action_just_pressed("up") or Input.is_action_just_pressed("down") or plus or minus):
+		if (Input.is_action_just_pressed("up") or Input.is_action_just_pressed("down") or Input.is_action_just_pressed("break") or plus or minus):
 			supertorpedo_auto=false
 			supertorpedo_speed/=2
 		#apply_central_force(-basis.z * supertorpedo_drill_speed)
-		gravity_scale = 0.25
+		#gravity_scale = 0.25
 		linear_damp = 0.1
 		
 	else:
-		gravity_scale=0.5
+		#gravity_scale=0.5
 		if !plus and !minus:
 			linear_damp = 0
 		else: 
@@ -507,13 +633,6 @@ func jump():
 		
 		apply_central_impulse(global_basis.y   * jump_power*jump_power_air_factor ) #vector3.up
 		
-	
-func spawn_marker(pos: Vector3):
-	var m = MeshInstance3D.new()
-	m.mesh = SphereMesh.new()
-	m.scale = Vector3.ONE * 1
-	add_child(m)
-	m.position = pos
 	
 func movement_torque(delta):
 	var f_input = Input.get_action_raw_strength("forward") - Input.get_action_raw_strength("backward")
@@ -571,111 +690,6 @@ func movement_torque(delta):
 		#apply_torque(t_input * local_z.normalized() * torpedoturn_speed)
 		apply_torque(h_input * local_y.normalized() * boomerangturn_speed)
 
-	'''	#TURNING FISH
-	var target_dir = -camera_3d.global_transform.basis.z #-relative_camera_direction_z
-	target_dir.y = 0
-	target_dir = target_dir.normalized()
-	var vert_speed = linear_velocity.y
-	var current_speed = Vector3(linear_velocity.x,0,linear_velocity.z).length()
-	if current_speed >= 0.01:
-		var target_vel = target_dir * current_speed
-		var dotturn = Vector3(linear_velocity.x,0,linear_velocity.z).normalized().dot(target_dir)
-		var turn_sharpness = clamp(dotturn,0.0,1.0) 
-		linear_velocity = linear_velocity.lerp(target_vel, fish_turn_speed * delta)
-		linear_velocity *= (0.95 + (0.05 * turn_sharpness))
-'''
-"""		
-	#var old_dir = linear_velocity.normalized()
-	
-	#var max_turn_angle = deg_to_rad(120)
-	#var turn_angle = old_dir.angle_to(target_dir)
-	# PREVENT 180° TURNS
-	#if turn_angle > max_turn_angle:
-	#	target_dir = old_dir.slerp(target_dir, max_turn_angle / turn_angle).normalized()
-		#print("yeo")
-	# LIMIT TURN SPEED (SMOOTH)
-	#var t = 1.0
-	
-	#if turn_angle > 0.001:
-	#	t = min(1.0, fish_turn_speed * delta / turn_angle)
-	#var new_dir = old_dir.slerp(target_dir, t).normalized()
-	# TURN SPEED LOSS
-	#var turn_loss = 0.25
-	#var alignment = old_dir.dot(new_dir)
-	# 1 = same direction, 0 = 90°, -1 = opposite
-	#var loss_factor = lerp(1.0, 1.0 - turn_loss, 1.0 - alignment)
-	#fish_turn_speed *= loss_factor
-	
-	
-	# CHANGE TURN DIR WITH NEW SPEED
-	#new_dir = old_dir.slerp(target_dir, fish_turn_speed).normalized()
-	#linear_velocity = new_dir * current_speed
-	#linear_velocity.y = vert_speed
-	
-	# 'global_transform.basis.y' is the direction the TOP of the fish is pointing
-	
-	# We set the total angular velocity to point in that direction
-	#angular_velocity = local_up * spin_speed
-	
-	
-	#if move_direction_f.length() > 0:
-	# 1. Find the 'axle' (perpendicular to movement and up)
-	# If move_direction is Forward, torque_axis will be Right/Left
-	var torque_axis = move_direction_f.cross(Vector3.UP)
-			
-	# 2. Check your speed limit (using the dot product logic from before)
-	var current_speed_in_direction = linear_velocity.dot(move_direction_f*-1)
-	
-	#if current_speed_in_direction < manual_speed_threshold:
-		# 3. Apply torque instead of central force
-		# We use negative torque_axis because of the way Godot's axes are oriented
-	
-	var gddbonus = ground_torque_dampen
-	if grounded:
-		gddbonus = 1
-"""	
-		
-		
-		
-	
-"""func movement(delta):
-	var f_input = Input.get_action_raw_strength("backward") - Input.get_action_raw_strength("forward")
-	var h_input = Input.get_action_raw_strength("right") - Input.get_action_raw_strength("left")
-	
-	var as_d_input = Input.get_action_raw_strength("ANGULAR speed down") - Input.get_action_raw_strength("ANGULAR speed up")
-	var ls_d_input = Input.get_action_raw_strength("LINEAR speed down") - Input.get_action_raw_strength("LINEAR speed up")
-	
-	
-	
-	var camera_transform = camera_3d.get_camera_transform()
-	
-	var relative_camera_direction_z = camera_transform.basis.z.normalized()
-	var relative_camera_direction_x = camera_transform.basis.x.normalized()
-	
-	var direction_f = f_input * relative_camera_direction_z
-	var direction_h = h_input * relative_camera_direction_x
-	
-	var move_direction = (relative_camera_direction_z * f_input + relative_camera_direction_x * h_input).normalized()
-	move_direction.y = 0 # Keep force horizontal
-		
-	if move_direction.length() > 0:
-		# 2. Calculate current velocity along the move direction
-		# .dot() returns how much 'linear_velocity' aligns with 'move_direction'
-		var current_speed_in_direction = linear_velocity.dot(move_direction)
-		
-		var speed_diff = manual_speed_threshold - current_speed_in_direction
-		var force_multiplier = clamp(speed_diff / 2.0, 0.0, 1.0)
-		
-		# 3. Only apply force if we haven't hit the manual threshold
-		if current_speed_in_direction < manual_speed_threshold:
-			apply_central_force(move_direction * movement_speed * force_multiplier * delta) #manual_force_magnitude
-		else:
-			print("2much4ce")
-	#apply_central_force(direction_f * movement_speed * delta)
-	#apply_central_force(direction_h * movement_speed * delta)
-	
-	pass
-"""
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 #func _process(delta: float) -> void:

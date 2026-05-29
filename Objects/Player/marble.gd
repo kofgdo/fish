@@ -35,6 +35,7 @@ var shattercount : int = 0
 
 var skidmode : float = -1 #when activated, goes down until stops at 0. -1 means deactivated
 var skidmodemax : float = 45 #max jumphold
+var uptilt : float = 0
 
 var ismarbletopmanualspeeding : int = 0
 var ismarbletoptorquing : int = 0
@@ -54,7 +55,8 @@ var level_finish_cooldown_tickstate : int = 0 # -1 = just got in, 0 = idle, 1 = 
 @onready var fish_test_1_animation_tree: AnimationTree = $"../flatfish/AnimationTree"
 
 var facingfish : Vector3
-
+var last_facingfish: Vector3 = Vector3.FORWARD
+var last_stable_basis: Basis = Basis.IDENTITY
 
 var raycheckgrounded = false
 var contactgrounded = false
@@ -109,7 +111,7 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 		if bump_sphere==0:
 			bump_sphere_speed= 0
 			bump_sphere_dir= Vector3(0,0,0)
-			'''
+	'''
 	if state.get_contact_count() > 0:
 		for i in range(state.get_contact_count()):
 			# Get the velocity and the normal of the collision
@@ -185,7 +187,7 @@ func destroy_sphere():
 	#get_parent().
 	get_tree().root.find_child("Environment", true, false).add_child(new_fish)
 	fish_body.setup_fish_from_ball(self,last_linear_velocity,angular_velocity,fish_test_1.position+Vector3(0,0.3,0),fish_test_1.global_position,fish_test_1.rotation,fish_test_1.global_rotation,fish_test_1.scale, \
-	camera_container.camrot_h,camera_container.camrot_v,fish_test_1.supertorpedo_mode,fish_test_1.supertorpedo_speed,fish_test_1.max_supertorpedo_speed,skidmode, facingfish)
+	camera_container.camrot_h,camera_container.camrot_v,fish_test_1.supertorpedo_mode,fish_test_1.supertorpedo_speed,fish_test_1.max_supertorpedo_speed,skidmode, facingfish, uptilt)
 	
 	owner.queue_free()
 	
@@ -295,46 +297,57 @@ func movement_torque(delta):
 	var move_direction = (relative_camera_direction_z * f_input + relative_camera_direction_x * h_input).normalized()
 	move_direction.y = 0 # Keep force horizontal
 	
-	if move_direction.length() > 0 or 1==1:
-		# 1. Find the 'axle' (perpendicular to movement and up)
-		# If move_direction is Forward, torque_axis will be Right/Left
-		var torque_axis : Vector3
-		#if move_direction.length() > 0:
-		#	torque_axis = move_direction.cross(Vector3.UP)
-		#else:
-		#	torque_axis = linear_velocity.normalized()
-		# POINT FISH AT MOVE DIRECTION
-		# 1. Create a target transformation looking at the movement
-		var rotfish_correction = Quaternion(Vector3.FORWARD, deg_to_rad(90))
-		var uptilt = skidmodemax-skidmode
-		if skidmode==-1:
-			uptilt =0
-		var pitch_quat = Quaternion(Vector3.RIGHT, deg_to_rad(uptilt))
-		
-		var target_transform = fish_test_1.global_transform.looking_at(fish_test_1.global_position + move_direction, Vector3.UP)
-		if move_direction.length() <= 0:
-			target_transform= fish_test_1.global_transform.looking_at(fish_test_1.global_position + linear_velocity.normalized()*Vector3(-1,0,-1), Vector3.UP)
-			pass
-		 # 2. Smoothly rotate the current quaternion toward the target quaternion
-		var target_quat = Quaternion(Vector3.UP, PI) * target_transform.basis.get_rotation_quaternion() * pitch_quat * rotfish_correction * Quaternion(Vector3.FORWARD, deg_to_rad(fish_test_1.torpedo_correction_turbo))
-		
-		fish_test_1.quaternion = fish_test_1.quaternion.slerp(target_quat, fish_anim_rotation_speed * delta)
-		
-		#var clean_basis : Basis = Basis(fish_test_1.quaternion)
-		facingfish = Vector3(fish_test_1.nose_3d.global_position - fish_test_1.global_position).normalized()
-		# clean_basis.z.normalized()
-		# 2. Check your speed limit (using the dot product logic from before)
-		var current_speed_in_direction = linear_velocity.dot(move_direction*-1)
-		
-		if current_speed_in_direction < manual_speed_threshold and linear_velocity.length() < absolute_top_speed:
-			# 3. Apply torque instead of central force
-			# We use negative torque_axis because of the way Godot's axes are oriented
-			apply_torque(torque_axis * torque_magnitude)
-			'''/(2+skidmode)'''
-			ismarbletoptorquing = 0
-		else: 
-			ismarbletoptorquing = 1
 	
+	# 1. Find the 'axle' (perpendicular to movement and up)
+	# If move_direction is Forward, torque_axis will be Right/Left
+	var torque_axis : Vector3
+	#if move_direction.length() > 0:
+	#	torque_axis = move_direction.cross(Vector3.UP)
+	#else:
+	#	torque_axis = linear_velocity.normalized()
+	# POINT FISH AT MOVE DIRECTION
+	# 1. Create a target transformation looking at the movement
+	var rotfish_correction = Quaternion(Vector3.FORWARD, deg_to_rad(90))
+	
+	uptilt = skidmodemax-skidmode
+	if skidmode==-1:
+		uptilt =0
+	
+	
+	if move_direction.length() > 0:
+		var target_transform = fish_test_1.global_transform.looking_at(fish_test_1.global_position + move_direction, Vector3.UP)
+		last_stable_basis = target_transform.basis
+		
+	#fish_test_1.global_transform.looking_at(fish_test_1.global_position + move_direction, Vector3.UP)
+		
+	else:
+		
+		pass
+	var pitch_quat = Quaternion(Vector3.RIGHT, deg_to_rad(uptilt))
+	#NEW
+	var turbo_roll_quat = Quaternion(Vector3.FORWARD, deg_to_rad(fish_test_1.torpedo_correction_turbo))
+	var target_quat = Quaternion(Vector3.UP, PI) * last_stable_basis.get_rotation_quaternion() * pitch_quat * rotfish_correction * turbo_roll_quat
+	if fish_test_1.supertorpedo_speed==fish_test_1.max_supertorpedo_speed or fish_test_1.supertorpedo_speed==-fish_test_1.max_supertorpedo_speed:
+		fish_test_1.quaternion = target_quat
+	else:
+		fish_test_1.quaternion = fish_test_1.quaternion.slerp(target_quat, fish_anim_rotation_speed * delta)
+	
+	facingfish = Vector3(fish_test_1.nose_3d.global_position - fish_test_1.global_position).normalized()
+	#facingfish = -last_stable_basis.z.normalized()
+	
+	# clean_basis.z.normalized()
+	# 2. Check your speed limit (using the dot product logic from before)
+	var current_speed_in_direction = linear_velocity.dot(move_direction*-1)
+	
+	if current_speed_in_direction < manual_speed_threshold and linear_velocity.length() < absolute_top_speed:
+		# 3. Apply torque instead of central force
+		# We use negative torque_axis because of the way Godot's axes are oriented
+		apply_torque(torque_axis * torque_magnitude)
+		'''/(2+skidmode)'''
+		ismarbletoptorquing = 0
+	else: 
+		ismarbletoptorquing = 1
+
 func movement(delta):
 	var f_input = Input.get_action_raw_strength("backward") - Input.get_action_raw_strength("forward")
 	var h_input = Input.get_action_raw_strength("right") - Input.get_action_raw_strength("left")
