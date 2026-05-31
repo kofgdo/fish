@@ -194,7 +194,6 @@ func destroy_sphere():
 func _physics_process(delta):
 	last_linear_velocity = linear_velocity
 	
-	
 	if brokensphere>0:
 		brokensphere-=1
 	
@@ -207,9 +206,11 @@ func _physics_process(delta):
 	if groundtimer > 0: 
 		grounded = true
 		gravity_scale=1
+		linear_damp=0.25
 	else:
 		grounded = false
 		gravity_scale=0.5
+		linear_damp=0
 	#print("can move",can_move)	
 	#print("level finish cooldown tickstate",level_finish_cooldown_tickstate)	
 	#print("level finished",level_finished)	

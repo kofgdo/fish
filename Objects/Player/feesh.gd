@@ -3,14 +3,19 @@ class_name Fish
 
 var init_livel
 var init_supertorpspeed
+var init_maxsupertorpspeed
 var init_facing
 var init_tiltup
+var init_crh
+var init_crv
 var init : bool = true
 
 #@export var movement_speed: float = 500.0 #385.0
 @export var max_velocity: float = 15
-@export var jump_power : float = 50 
+@export var jump_power : float = 5 
 @export var jump_power_air_factor : float = 1#0.3
+var jump_weaken : float = 1.0
+@export var jump_weaken_factor: float = 2
 @export var supertorpedo_drill_speed : float = 50
 @export var supertorpedo_drill_turnrate : float = 5
 @export var supertorpedo_velimit : float = 0.5
@@ -152,7 +157,6 @@ func setup_fish_from_ball(ballnode : Node3D, livel : Vector3, anvel : Vector3, p
 	#camera_container.cambigsmooth=90
 	#camera_container.camlock=5
 	
-	
 	rotation = rot 
 	
 	global_rotation = grot #+ Quaternion(Vector3.FORWARD, deg_to_rad(90))
@@ -161,12 +165,6 @@ func setup_fish_from_ball(ballnode : Node3D, livel : Vector3, anvel : Vector3, p
 		#supertorpedo_auto=true
 		
 		pass
-	
-		
-		
-	#	print("torpedoauto")
-	
-	
 		
 	#angular_velocity = anvel
 	global_position = gpos
@@ -174,27 +172,21 @@ func setup_fish_from_ball(ballnode : Node3D, livel : Vector3, anvel : Vector3, p
 	
 	
 	
-	
-	camera_container.camrot_h = crh
-	camera_container.camrot_v = crv
-	
-	
-	
 	fish_size = sca.x #this is vector3
 	
-	
-	
 	init = true
+	init_crh = crh
+	init_crv = crv
 	init_livel = livel
 	init_tiltup = tiltup
 	init_facing = facing
 	init_supertorpspeed = abs(supertorpspeed)
+	init_maxsupertorpspeed = supertorpmaxspeed
 	
 	print(str(init_supertorpspeed)  + "LAUNCH")
 	
-	
 	playback.travel("Swim")
-	print("ok")
+	
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -212,9 +204,27 @@ func _integrate_forces(state: PhysicsDirectBodyState3D):
 	land_vspeed_dampen_cooldown=clamp(land_vspeed_dampen_cooldown-1,0,land_vspeed_dampen_cooldown_max)
 	
 	if init:
-		linear_velocity = init_livel
-		linear_velocity += init_facing * init_supertorpspeed/3 #10 = break speedadd
+		camera_container.camrot_h = init_crh
+		camera_container.camrot_v = init_crv
+		if init_supertorpspeed!=init_maxsupertorpspeed:
+			var fbvelen = init_livel.length()
+			var fbmod = init_tiltup/90 # 1 = vertical, 0 = normal
+			var fbfallspeed = init_livel.y
+			var fbhvel = Vector3(init_livel.x,0,init_livel.z)
+			var fbhspeed = fbhvel.length()
+			var fbhdir = fbhvel.normalized()
+			
+			if fbvelen > 0.05:
+				var fbforward = fbhdir * (fbhspeed * (1.0 - fbmod))
+				var fbupward = Vector3.UP * (fbmod * fbhspeed)
+				linear_velocity = (Vector3.UP * fbfallspeed) + fbforward + fbupward
+				
+			else:
+				linear_velocity = init_livel
+		else:
+			linear_velocity += init_facing * init_supertorpspeed/3 #10 = break speedadd
 		init=false
+		
 	var f_input = Input.get_action_raw_strength("forward") - Input.get_action_raw_strength("backward")
 	var h_input = Input.get_action_raw_strength("left") - Input.get_action_raw_strength("right")
 	#GOGO
@@ -522,9 +532,12 @@ func _physics_process(delta):
 		#	animation_player.play("fall")
 	if groundtimer > 0: 
 		grounded = true
+		jump_weaken=1
 		#gravity_scale=1
 	else:
 		grounded = false
+		if jump_weaken>jump_weaken/jump_weaken_factor:
+			jump_weaken/=jump_weaken_factor
 		#gravity_scale=0.5
 	
 	if can_move:
@@ -623,8 +636,25 @@ func _physics_process(delta):
 		if !plus and !minus:
 			linear_damp = 0
 		else: 
-			linear_damp = 0.5
+			linear_damp = 0#.5
 func jump():
+	
+	var jump_direction = global_basis.y.normalized()
+	var jump_redirect_percentage: float = 0.3
+	var horizontal_vel = Vector3(linear_velocity.x, 0, linear_velocity.z)
+	var horizontal_speed = horizontal_vel.length()
+	var horizontal_dir = horizontal_vel.normalized()
+	var alignment = jump_direction.dot(horizontal_dir)
+	
+	var redirection_factor = max(0.0, alignment)
+	var momentum_boost = horizontal_speed * redirection_factor
+	
+	var final_jump_velocity = jump_direction * (jump_power + momentum_boost)
+	
+	apply_central_impulse(global_basis.y.normalized()*final_jump_velocity*jump_weaken)
+	jump_weaken/=jump_weaken_factor
+	
+	'''
 	if grounded and playback.get_current_node()=="Flap" and animation_player.current_animation_position>0.1:
 		apply_central_impulse(global_basis.y  * jump_power )
 		
@@ -632,7 +662,7 @@ func jump():
 	else:
 		
 		apply_central_impulse(global_basis.y   * jump_power*jump_power_air_factor ) #vector3.up
-		
+	'''
 	
 func movement_torque(delta):
 	var f_input = Input.get_action_raw_strength("forward") - Input.get_action_raw_strength("backward")
